@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Проект Жданова С.Ю. — Дашборд</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Unbounded:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--s:#111118;--s2:#0f0f16;--b:#222;--b2:#1a1a22;--b3:#333;
+  --t:#e2e2e8;--t2:#ccc;--t3:#888;--t4:#666;--t5:#555;
+  --mind:#a78bfa;--mind-bg:#1a1a2e;--mind-dk:#6d28d9;
+  --biz:#4ade80;--biz-bg:#1a2e1a;--biz-dk:#16a34a;
+  --both:#fbbf24;--both-bg:#2e2a1a;
+  --danger:#f87171;--white:#fff;
+  --fb:'Inter',sans-serif;--fh:'Unbounded',sans-serif;
+}
+body{background:var(--bg);color:var(--t);font-family:var(--fb);font-size:13px;line-height:1.55}
+.hdr{background:linear-gradient(135deg,#0f0f1a 0%,#1a0a2e 50%,#0a1a2e 100%);border-bottom:1px solid var(--b);padding:24px 32px}
+.hdr-in{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.hdr-lbl{font-size:11px;color:var(--t4);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px}
+.hdr-title{font-family:var(--fh);font-size:22px;font-weight:800;background:linear-gradient(90deg,var(--mind),var(--biz));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr-sub{font-size:12px;color:var(--t3);margin-top:4px}
+.hdr-stats{display:flex;align-items:center;gap:12px}
+.hdr-sl{font-size:11px;color:var(--t4)}
+.hdr-sv{font-family:var(--fh);font-size:20px;font-weight:700}
+.hdr-div{width:1px;height:36px;background:var(--b3)}
+.tabs{display:flex;gap:4px;margin-top:20px;overflow-x:auto;padding-bottom:4px}
+.tab{background:transparent;color:var(--t3);border:1px solid var(--b3);padding:6px 14px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--fh);white-space:nowrap;transition:all .15s}
+.tab.on{background:var(--mind);color:var(--bg);border-color:var(--mind)}
+.tab:hover:not(.on){border-color:var(--t3);color:var(--t2)}
+.cnt{padding:24px 32px;max-width:1140px}
+.pnl{display:none}.pnl.on{display:block}
+.card{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:16px}
+.card-l{border-left:3px solid var(--mind)}
+.kpi-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px}
+.kpi-lbl{font-size:11px;color:var(--t4);margin-bottom:6px}
+.kpi-val{font-family:var(--fh);font-size:20px;font-weight:700}
+.badge{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap;display:inline-block}
+.b-m{background:var(--mind-bg);color:var(--mind);border:1px solid var(--mind)}
+.b-b{background:var(--biz-bg);color:var(--biz);border:1px solid var(--biz)}
+.b-o{background:var(--both-bg);color:var(--both);border:1px solid var(--both)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:8px 12px;text-align:left;font-weight:600}
+td{padding:8px 12px;border-bottom:1px solid var(--b2)}
+.th-m th{border-bottom:2px solid var(--mind);color:var(--mind)}
+.th-b th{border-bottom:2px solid var(--biz);color:var(--biz)}
+.th-o th{border-bottom:2px solid var(--both);color:var(--both)}
+.th-n th{border-bottom:2px solid var(--b3);color:var(--t3)}
+.tr-a{background:var(--s2)}
+.tr-tm{background:var(--mind-bg)}.tr-tb{background:var(--biz-bg)}.tr-to{background:var(--both-bg)}
+td.r,th.r{text-align:right}
+.sec{font-family:var(--fh);font-size:16px;font-weight:700;margin-bottom:16px}
+.sec-sm{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:12px}
+.sec-xs{font-family:var(--fh);font-size:12px;font-weight:600;margin-bottom:8px}
+.hint{margin-top:16px;padding:12px;background:var(--s);border:1px solid var(--b3);border-radius:6px;font-size:12px;color:var(--t3)}
+.important{background:#2a1a1a;border:1px solid #f8717133;border-radius:6px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--danger)}
+.important b{color:#fca5a5}
+.scroll-x{overflow-x:auto}
+.focus-box{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:20px;margin-bottom:20px}
+.focus-title{font-family:var(--fh);font-size:13px;font-weight:700;margin-bottom:12px}
+.focus-item{padding:6px 0;border-bottom:1px solid var(--b2);font-size:12px;color:var(--t2);display:flex;gap:8px;align-items:flex-start}
+.focus-item:last-child{border-bottom:none}
+.focus-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.funnel{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:24px}
+.f-step{padding:5px 11px;border-radius:4px;font-size:11px;color:var(--t2)}
+.f-arr{font-size:16px}
+.chart-box{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:20px;margin-bottom:24px}
+.chart-t{font-family:var(--fh);font-size:13px;font-weight:600;margin-bottom:16px;color:var(--t2)}
+.chart-area{display:flex;align-items:flex-end;gap:12px;height:200px;justify-content:center}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;max-width:100px}
+.chart-v{font-family:var(--fh);font-size:10px;font-weight:600}
+.chart-bars{display:flex;gap:3px;align-items:flex-end}
+.bar-m{width:28px;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--mind),var(--mind-dk));transition:height .5s}
+.bar-b{width:28px;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--biz),var(--biz-dk));transition:height .5s}
+.chart-l{font-size:10px;color:var(--t4);margin-top:4px}
+.legend{display:flex;gap:16px;margin-top:12px;justify-content:center}
+.legend-i{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3)}
+.legend-d{width:12px;height:12px;border-radius:2px}
+.task-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--b2);cursor:pointer}
+.task-row:last-child{border-bottom:none}
+.chk{width:18px;height:18px;border-radius:4px;border:2px solid #444;background:transparent;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .15s;color:var(--bg)}
+.chk.done{border-color:var(--biz);background:var(--biz)}
+.task-txt{font-size:12px;color:var(--t2);flex:1;transition:all .15s}
+.task-txt.done{color:var(--t5);text-decoration:line-through}
+.road-ph{margin-bottom:24px}
+.ph-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ph-dot{width:8px;height:8px;border-radius:50%}
+.ph-title{font-family:var(--fh);font-size:14px;font-weight:700}
+.ph-line{margin-left:3px;padding-left:20px}
+.ph-task{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--b2)}
+.ph-task:last-child{border-bottom:none}
+.ph-task-d{width:6px;height:6px;border-radius:50%;background:#444;flex-shrink:0}
+.ph-task-t{font-size:12px;color:var(--t2);flex:1}
+.ph-task-w{font-size:11px;color:var(--t4);min-width:80px;text-align:right}
+.metrics-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
+.m-card{background:var(--s);border-radius:8px;padding:16px}
+.m-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.m-lbl{font-size:12px;color:var(--t3)}
+.m-val{font-family:var(--fh);font-size:20px;font-weight:700}
+.m-bar-bg{margin-top:8px;height:4px;background:var(--b);border-radius:2px}
+.m-bar{height:100%;width:0%;border-radius:2px;transition:width .5s}
+.prod-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.p-card{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:16px}
+.p-card-title{font-family:var(--fh);font-size:13px;font-weight:700;margin-bottom:12px}
+.p-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--b2);font-size:12px}
+.p-item:last-child{border-bottom:none}
+.p-name{color:var(--t2)}.p-price{font-weight:600}
+.content-block{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:16px;margin-bottom:16px}
+.content-block h4{font-family:var(--fh);font-size:12px;font-weight:600;margin-bottom:8px}
+.c-item{font-size:12px;color:var(--t2);padding:4px 0;padding-left:14px;position:relative}
+.c-item::before{content:'';position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%}
+.ladder-box{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:20px;margin-top:24px}
+.ladder-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.ladder-step{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.ladder-num{border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700;height:24px}
+.ladder-name{font-size:12px;color:var(--t2);flex:1}
+.ladder-pr{font-size:11px;font-weight:600}
+.problem-box{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:20px;margin-bottom:20px}
+.problem-title{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:8px}
+.problem-desc{font-size:12px;color:var(--t3);margin-bottom:12px}
+.step-num{display:inline-flex;width:22px;height:22px;border-radius:50%;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-right:6px;flex-shrink:0}
+.step-row{display:flex;align-items:flex-start;gap:4px;padding:6px 0;font-size:12px;color:var(--t2)}
+@media(max-width:700px){.hdr{padding:16px}.cnt{padding:16px}.prod-cards,.ladder-grid{grid-template-columns:1fr}.hdr-stats{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-in">
+    <div>
+      <div class="hdr-lbl">Продюсерский центр</div>
+      <div class="hdr-title">ПРОЕКТ ЖДАНОВА С.Ю.</div>
+      <div class="hdr-sub">Школа мышления + Бизнес-школа · Цель: 500К/мес</div>
+    </div>
+    <div class="hdr-stats">
+      <div style="text-align:right"><div class="hdr-sl">ЦЕЛЬ МЕС. 1</div><div class="hdr-sv" style="color:var(--biz)" id="ht1"></div></div>
+      <div class="hdr-div"></div>
+      <div style="text-align:right"><div class="hdr-sl">ПРОГНОЗ МЕС. 6</div><div class="hdr-sv" style="color:var(--biz)" id="ht6"></div></div>
+    </div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+</div>
+
+<div class="cnt">
+  <div class="pnl on" id="p-overview"></div>
+  <div class="pnl" id="p-map"></div>
+  <div class="pnl" id="p-fin"></div>
+  <div class="pnl" id="p-road"></div>
+  <div class="pnl" id="p-products"></div>
+  <div class="pnl" id="p-content"></div>
+  <div class="pnl" id="p-tasks"></div>
+  <div class="pnl" id="p-metrics"></div>
+  <div class="pnl" id="p-problems"></div>
+</div>
+
+<script>
+// ══════ DATA ══════
+const M6 = ["Месяц 1","Месяц 2","Месяц 3","Месяц 4","Месяц 5","Месяц 6"];
+
+// ШКОЛА МЫШЛЕНИЯ — обновлённая экономика
+const mindClub = [50,75,100,130,160,200];
+const mindClubRev = mindClub.map(n=>n*1990);
+const mindCourseConv = [0.10,0.13,0.15,0.15,0.18,0.20];
+const mindCourseN = mindClub.map((n,i)=>Math.round(n*mindCourseConv[i]));
+const mindCourseRev = mindCourseN.map(n=>n*47000);
+// VIP 2-3% конверсия из клуба
+const mindVipConv = [0,0.02,0.03,0.03,0.03,0.03];
+const mindVipN = mindClub.map((n,i)=>Math.round(n*mindVipConv[i]));
+const mindVipRev = mindVipN.map(n=>n*170000);
+const mindTotal = mindClubRev.map((v,i)=>v+mindCourseRev[i]+mindVipRev[i]);
+
+// БИЗНЕС-ШКОЛА — без коучинга, МК 5400 + средний чек 27000
+const bizMkN = [25,45,65,80,100,120];
+const bizMkRev = bizMkN.map(n=>n*5400);
+const bizMidConv = [0.10,0.12,0.15,0.15,0.18,0.20];
+const bizMidN = bizMkN.map((n,i)=>Math.round(n*bizMidConv[i]));
+const bizMidRev = bizMidN.map(n=>n*27000);
+const bizTotal = bizMkRev.map((v,i)=>v+bizMidRev[i]);
+
+const grand = mindTotal.map((v,i)=>v+bizTotal[i]);
+
+const fmt = n=>n.toLocaleString("ru-RU")+" ₽";
+function bg(s){
+  if(["mind","Мышл.","Мышление"].includes(s)) return '<span class="badge b-m">Мышление</span>';
+  if(["biz","Бизнес"].includes(s)) return '<span class="badge b-b">Бизнес</span>';
+  return '<span class="badge b-o">Обе</span>';
+}
+function sc(s){
+  if(["mind","Мышл.","Мышление"].includes(s)) return "var(--mind)";
+  if(["biz","Бизнес"].includes(s)) return "var(--biz)";
+  return "var(--both)";
+}
+
+// ══════ TABS ══════
+const tabDef=[
+  {n:"Обзор",p:"p-overview"},{n:"Карта проекта",p:"p-map"},{n:"Финансы",p:"p-fin"},
+  {n:"Роадмап",p:"p-road"},{n:"Продукты",p:"p-products"},{n:"Контент",p:"p-content"},
+  {n:"Задачи",p:"p-tasks"},{n:"Метрики",p:"p-metrics"},{n:"Проблемы",p:"p-problems"}
+];
+const tabsEl=document.getElementById("tabs");
+tabDef.forEach((t,i)=>{
+  const b=document.createElement("button");b.className="tab"+(i===0?" on":"");b.textContent=t.n;
+  b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));document.querySelectorAll(".pnl").forEach(x=>x.classList.remove("on"));b.classList.add("on");document.getElementById(t.p).classList.add("on")};
+  tabsEl.appendChild(b);
+});
+
+// ══════ HEADER ══════
+document.getElementById("ht1").textContent=fmt(grand[0]);
+document.getElementById("ht6").textContent=fmt(grand[5]);
+
+// ══════ OVERVIEW ══════
+document.getElementById("p-overview").innerHTML=`
+<div class="kpi-g">
+  <div class="card card-l" style="border-left-color:var(--mind)"><div class="kpi-lbl">Школа мышления · мес. 1</div><div class="kpi-val" style="color:var(--mind)">${fmt(mindTotal[0])}</div></div>
+  <div class="card card-l" style="border-left-color:var(--biz)"><div class="kpi-lbl">Бизнес-школа · мес. 1</div><div class="kpi-val" style="color:var(--biz)">${fmt(bizTotal[0])}</div></div>
+  <div class="card card-l" style="border-left-color:var(--biz)"><div class="kpi-lbl">Итого · мес. 1</div><div class="kpi-val" style="color:var(--biz)">${fmt(grand[0])}</div></div>
+  <div class="card card-l" style="border-left-color:var(--both)"><div class="kpi-lbl">Итого · мес. 6</div><div class="kpi-val" style="color:var(--both)">${fmt(grand[5])}</div></div>
+</div>
+<div class="chart-box">
+  <div class="chart-t">ПРОГНОЗ ДОХОДА НА 6 МЕСЯЦЕВ</div>
+  <div class="chart-area" id="chartArea"></div>
+  <div class="legend">
+    <div class="legend-i"><div class="legend-d" style="background:var(--mind)"></div>Школа мышления</div>
+    <div class="legend-i"><div class="legend-d" style="background:var(--biz)"></div>Бизнес-школа</div>
+  </div>
+</div>`;
+
+// Chart
+const maxV=Math.max(...grand);
+const ca=document.getElementById("chartArea");
+M6.forEach((m,i)=>{
+  const mH=(mindTotal[i]/maxV)*160, bH=(bizTotal[i]/maxV)*160;
+  ca.innerHTML+=`<div class="chart-col"><div class="chart-v" style="color:var(--biz)">${fmt(grand[i])}</div><div class="chart-bars"><div class="bar-m" style="height:${mH}px"></div><div class="bar-b" style="height:${bH}px"></div></div><div class="chart-l">${m}</div></div>`;
+});
+
+// ══════ КАРТА ПРОЕКТА ══════
+document.getElementById("p-map").innerHTML=`
+<p style="font-size:13px;color:var(--t2);margin-bottom:20px">Проект строится на двух параллельных школах, каждая со своим аккаунтом, позиционированием и продуктовой линейкой. Обе школы запускаются одновременно и работают как два канала монетизации аудитории и экспертизы Жданова С.Ю.</p>
+<h2 class="sec" style="color:var(--t2)">Две школы — два аккаунта</h2>
+<div class="scroll-x" style="margin-bottom:24px">
+<table><thead class="th-n"><tr><th>Параметр</th><th>Школа мышления</th><th>Бизнес-школа</th></tr></thead><tbody>
+<tr class="tr-a"><td>Аккаунт</td><td>Личная страница СЮ</td><td>Бизнес-школа Сергея Жданова</td></tr>
+<tr><td>Ролевая модель</td><td>Эндрю Тейт-стиль</td><td>Эксперт-ресторатор</td></tr>
+<tr class="tr-a"><td>Аудитория</td><td>Широкая (мышление, рост)</td><td>Предприниматели МСП и выше</td></tr>
+<tr><td>Ключевая идея</td><td>Любой может стать тем, кем хочет</td><td>Системный бизнес руками команды</td></tr>
+<tr class="tr-a"><td>Основа продуктов</td><td>Психолог + мышление</td><td>Бизнес-экспертиза СЮ</td></tr>
+</tbody></table></div>
+
+<h2 class="sec" style="color:var(--mind)">Школа мышления — продуктовая лестница</h2>
+<p style="font-size:12px;color:var(--t3);margin-bottom:12px">Продуктовая линейка выстроена как воронка: клуб → среднечековый продукт → VIP.</p>
+<div class="scroll-x" style="margin-bottom:16px">
+<table><thead class="th-m"><tr><th>Ступень</th><th>Продукт</th><th>Цена</th><th>Механика</th></tr></thead><tbody>
+<tr class="tr-a"><td>1 (вход)</td><td>Клуб мышления СЮ</td><td>1 990 р/мес</td><td>Лимит 50 чел, вход 3 дня/мес, лист ожидания, ежемесячная тема, диагностика</td></tr>
+<tr><td>2 (средний чек)</td><td>Курс трансформации</td><td>47 000 р</td><td>Глубокая работа с психологом + мышление, 4–6 недель, после диагностики из клуба</td></tr>
+<tr class="tr-a"><td>3 (VIP)</td><td>VIP-программа</td><td>> 170 000 р</td><td>Индивидуальная / мини-группа, личная трансформация с СЮ</td></tr>
+</tbody></table></div>
+<div class="important"><b>Важно!</b> Войти в клуб можно только 3 дня в месяц, все остальное — лист ожидания (в воронке реализовать). Эффект избранности и исключительности + групповая динамика</div>
+
+<h3 class="sec-sm" style="color:var(--mind)">Механика клуба (подробно)</h3>
+<div class="card" style="margin-bottom:24px">
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>Вход открывается 1 раз в месяц на 3 дня</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>Лимит участников: старт с 50 человек, далее рост по мере спроса</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>Лист ожидания: анкета → ожидание → уведомление о старте окна входа</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>Каждый месяц — одна тема, все работают синхронно (вау-эффект)</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>Внутри: контент + задания + диагностика + прогрев к следующей ступени</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>Эффект избранности: не войдёшь, пока не выйдет кто-то (при заполнении лимита)</div>
+</div>
+
+<h2 class="sec" style="color:var(--biz)">Бизнес-школа — продуктовая карта</h2>
+<div class="scroll-x" style="margin-bottom:16px">
+<table><thead class="th-b"><tr><th>Продукт</th><th>Цена</th><th>Аудитория</th><th>Формат</th></tr></thead><tbody>
+<tr class="tr-a"><td>Индивидуальный коучинг Ольги</td><td>190 000 р (рассрочка)</td><td>Собственники, ТОП</td><td>Индивидуально, командообразование</td></tr>
+<tr><td>Мастер-классы (узкие темы)</td><td>5 400 р</td><td>Все предприниматели</td><td>Финансы, команда, маркетинг и др.</td></tr>
+<tr class="tr-a"><td>Среднечековый продукт (узкая ниша)</td><td>27 000 р</td><td>Участники МК</td><td>Глубокое погружение в тему МК</td></tr>
+<tr><td>1 ступень для бизнеса (МСП)</td><td>150 000–200 000 р</td><td>Малый и средний бизнес</td><td>Полный курс + мышление собственника + клуб Жданова в подарок на год</td></tr>
+<tr class="tr-a"><td>2 ступень для бизнеса (крупный)</td><td>300 000–500 000 р</td><td>Средний+ бизнес</td><td>Аудит процессов + команда + управление, работа с СЮ</td></tr>
+<tr><td>Обучение для HR (предзапись)</td><td>180 000 р</td><td>HR и собственники МСП</td><td>Подбор и управление командой</td></tr>
+<tr class="tr-a"><td>Мастермайнд для рестораторов (предзапись)</td><td>165 000 р</td><td>Рестораторы</td><td>3 дня, 1 раз/год, по заполнении предзаписи</td></tr>
+</tbody></table></div>
+<p style="font-size:12px;color:var(--t3);margin-bottom:16px">Продукты по предзаписи запускаются по мере набора анкет. Параллельно собирается база интересантов.</p>
+`;
+
+// ══════ ФИНАНСЫ ══════
+function finTbl(cls,headers,rows,totIdx){
+  let h=`<table><thead class="${cls}"><tr>${headers.map((x,i)=>`<th${i>0?' class="r"':''}>${x}</th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach((r,ri)=>{
+    const tot=ri===totIdx;const trc=tot?(cls.includes('m')?'tr-tm':cls.includes('b')?'tr-tb':'tr-to'):(ri%2===0?'tr-a':'');
+    h+=`<tr class="${trc}">${r.map((c,ci)=>`<td${ci>0?' class="r"':''} style="font-weight:${tot?700:400};color:${tot?(cls.includes('m')?'var(--mind)':cls.includes('b')?'var(--biz)':'var(--both)'):'var(--t2)'}">${c}</td>`).join('')}</tr>`;
+  });
+  return h+'</tbody></table>';
+}
+
+const convLabels=mindCourseConv.map((v,i)=>`${Math.round(v*100)}% (${mindCourseN[i]})`);
+const vipLabels=mindVipConv.map((v,i)=>`${Math.round(v*100)}% (${mindVipN[i]})`);
+
+document.getElementById("p-fin").innerHTML=`
+<h2 class="sec" style="color:var(--mind)">ШКОЛА МЫШЛЕНИЯ</h2>
+<div class="scroll-x" style="margin-bottom:24px">${finTbl('th-m',['Показатель',...M6],[
+  ['Участников клуба',...mindClub],
+  ['Доход клуб',...mindClubRev.map(fmt)],
+  ['Конверсия в курс 47к',...convLabels],
+  ['Доход курс',...mindCourseRev.map(fmt)],
+  ['Конверсия VIP (2-3%)',...vipLabels],
+  ['Доход VIP (170к)',...mindVipRev.map(fmt)],
+  ['ИТОГО',...mindTotal.map(fmt)]
+],6)}</div>
+
+<h2 class="sec" style="color:var(--biz)">БИЗНЕС-ШКОЛА</h2>
+<p style="font-size:12px;color:var(--t3);margin-bottom:12px">Модель: неделя контента → МК за 5 400 р → среднечековый продукт за 27 000 р. Каждый месяц новая тема, предыдущие МК тоже продаются.</p>
+<div class="scroll-x" style="margin-bottom:24px">${finTbl('th-b',['Показатель',...M6],[
+  ['Участники МК (5 400 р)',...bizMkN],
+  ['Доход МК',...bizMkRev.map(fmt)],
+  ['Конверсия в средний чек 27к',...bizMidConv.map((v,i)=>`${Math.round(v*100)}% (${bizMidN[i]})`)],
+  ['Доход средний чек',...bizMidRev.map(fmt)],
+  ['ИТОГО',...bizTotal.map(fmt)]
+],4)}</div>
+
+<h2 class="sec" style="color:var(--both)">СУММАРНЫЙ ПРОГНОЗ НА 6 МЕСЯЦЕВ</h2>
+<div class="scroll-x">${finTbl('th-o',['',...M6],[
+  ['Школа мышления',...mindTotal.map(fmt)],
+  ['Бизнес-школа',...bizTotal.map(fmt)],
+  ['ИТОГО',...grand.map(fmt)]
+],2)}</div>
+<div class="hint">💡 Это базовый прогноз без учёта коучинга Ольги (190к), продуктов 1 и 2 ступени, предзаписных продуктов. Они добавят выручку по мере создания.</div>
+`;
+
+// ══════ РОАДМАП ══════
+document.getElementById("p-road").innerHTML=`
+<div class="important"><b>Важно!</b> Бизнес-школу (аккаунт) нам надо запустить раньше, чтобы на него перегнать с инсты, и чтобы потом спокойно вещать там о мышлении собственника</div>
+
+<h2 class="sec" style="color:var(--danger)">Ключевой вектор на эту неделю</h2>
+
+<div class="card" style="margin-bottom:20px">
+  <div class="focus-title" style="color:var(--both)">Продуктовый</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--both)"></div>1) ЛМ + МК финансы</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--both)"></div>2) Финансовая диагностика как элемент продаж (в дальнейшем совмещаем диагностики по разным сферам в единую диагностику для продаж 1 и 2 ступени)</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>Созвон с психологом среда, перед этим — полное видение по продукту от нас</div>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+  <div class="focus-title" style="color:var(--mind)">ПРОДУКТОВЫЙ ФОКУС: ШКОЛА МЫШЛЕНИЯ</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>определение 12 / 6 тем клуба на год с психологом</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>методологическая часть клуба</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>продуктовое обещание (важно! от чего вау-эффект и создание диагностики для продаж среднечекового продукта)</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>прописание с психологом продуктов среднего чека и премиум-продукта (эффект «матрешки» от чего? продуктовые обещания)</div>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+  <div class="focus-title" style="color:var(--biz)">ПРОДУКТОВЫЙ ФОКУС: БИЗНЕС-ШКОЛА</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div>распределение тем из вектора «именно эти продукты лягут в 1 ступень продукта»</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div>старт работы с финансистом: ЛМ, МК, рефрейминг с помощью контента, вывод в среднечековый продукт по финансам</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div><b>РЕШЕНИЕ:</b> Каждая тема = МК + средний чек = в дальнейшем 1 ступень + наставники</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div>распределение графика запусков по каждой теме и подведение всей системы под это</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div>продумать как зафиналить конверсионно коучинг Ольги (рассрочка? после подключения продамуса)</div>
+</div>
+
+<div class="important"><b>Важно!</b> Предложить СЮ выкуп прав на контент среднечековых продуктов, которые лягут в основу 1 и 2 ступени продуктов</div>
+
+<div class="card" style="margin-bottom:20px">
+  <div class="focus-title" style="color:var(--biz)">Организационный</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div>1) прописать каждое касание в воронках школ (связаны с продуктом)</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div>2) сайт подразумевающий предзапись через бот на все продуктовые продукты</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div>3) подключение продамуса</div>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+  <div class="focus-title" style="color:var(--mind)">Контент</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>1) подготовка 15 рилс + 15 карусель в аккаунт бизнес-школы (упаковочные + смысловые на ЛМ и МК)</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>2) подготовка 15 рилс + 15 каруселей для школы мышления (упаковочные + смысловые на ЛМ и МК)</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--danger)"></div>Первый ютуб-ролик, раскрывающий нужные смыслы</div>
+</div>
+`;
+
+// ══════ ПРОДУКТЫ ══════
+document.getElementById("p-products").innerHTML=`
+<h2 class="sec" style="color:var(--t2)">ПРОДУКТЫ ПО ШКОЛАМ</h2>
+<div class="prod-cards">
+  <div class="p-card" style="border-top:3px solid var(--mind)">
+    <div class="p-card-title" style="color:var(--mind)">Школа мышления</div>
+    <div class="p-item"><span class="p-name">Клуб мышления СЮ</span><span class="p-price" style="color:var(--mind)">1 990 р/мес</span></div>
+    <div class="p-item"><span class="p-name">Курс трансформации (средний чек)</span><span class="p-price" style="color:var(--mind)">47 000 р</span></div>
+    <div class="p-item"><span class="p-name">VIP-программа</span><span class="p-price" style="color:var(--mind)">> 170 000 р</span></div>
+  </div>
+  <div class="p-card" style="border-top:3px solid var(--biz)">
+    <div class="p-card-title" style="color:var(--biz)">Бизнес-школа</div>
+    <div class="p-item"><span class="p-name">МК по узкой теме</span><span class="p-price" style="color:var(--biz)">5 400 р</span></div>
+    <div class="p-item"><span class="p-name">Среднечековый продукт (узкая ниша)</span><span class="p-price" style="color:var(--biz)">27 000 р</span></div>
+    <div class="p-item"><span class="p-name">1 ступень для бизнеса (МСП)</span><span class="p-price" style="color:var(--biz)">150–200к р</span></div>
+    <div class="p-item"><span class="p-name">2 ступень для бизнеса (крупный)</span><span class="p-price" style="color:var(--biz)">300–500к р</span></div>
+    <div class="p-item"><span class="p-name">Коучинг Ольги</span><span class="p-price" style="color:var(--biz)">190 000 р</span></div>
+    <div class="p-item"><span class="p-name">Обучение для HR (предзапись)</span><span class="p-price" style="color:var(--biz)">180 000 р</span></div>
+    <div class="p-item"><span class="p-name">Мастермайнд рестораторов (предзапись)</span><span class="p-price" style="color:var(--biz)">165 000 р</span></div>
+  </div>
+</div>
+
+<h2 class="sec" style="color:var(--mind)">ПРОДУКТОВЫЙ ФОКУС: ШКОЛА МЫШЛЕНИЯ</h2>
+<div class="card" style="margin-bottom:20px">
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>определение 12 / 6 тем клуба на год с психологом</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>методологическая часть клуба</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>продуктовое обещание (важно! от чего вау-эффект и создание диагностики для продаж среднечекового продукта)</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--mind)"></div>прописание с психологом продуктов среднего чека и премиум-продукта (эффект «матрешки» от чего? продуктовые обещания)</div>
+</div>
+
+<h2 class="sec" style="color:var(--biz)">ПРОДУКТОВЫЙ ФОКУС: БИЗНЕС-ШКОЛА</h2>
+<div class="card" style="margin-bottom:20px">
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div>распределение тем из вектора «именно эти продукты лягут в 1 ступень продукта»</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div>старт работы с финансистом: ЛМ, МК, рефрейминг с помощью контента, вывод в среднечековый продукт по финансам</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div><b>РЕШЕНИЕ:</b> Каждая тема = МК + средний чек = в дальнейшем 1 ступень + наставники</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div>распределение графика запусков по каждой теме и подведение всей системы под это</div>
+  <div class="focus-item"><div class="focus-dot" style="background:var(--biz)"></div>продумать как зафиналить конверсионно коучинг Ольги (рассрочка? после подключения продамуса)</div>
+</div>
+<div class="important"><b>Важно!</b> Предложить СЮ выкуп прав на контент среднечековых продуктов, которые лягут в основу 1 и 2 ступени продуктов</div>
+
+<h2 class="sec" style="color:var(--t2)">ВОРОНКИ</h2>
+<h3 class="sec-sm" style="color:var(--mind)">Школа мышления</h3>
+<div class="funnel">${["Рилс / Threads / vc.ru","Воронка","Лист ожидания","Клуб 1990р","Диагностика","Курс 47к","VIP 170к+"].map((s,i)=>(i>0?'<span class="f-arr" style="color:var(--mind)">→</span>':'')+`<span class="f-step" style="background:var(--mind-bg);border:1px solid #a78bfa33">${s}</span>`).join('')}</div>
+<h3 class="sec-sm" style="color:var(--biz)">Бизнес-школа</h3>
+<div class="funnel">${["Контент (тема мес.)","ЛМ","МК 5 400р","Средний чек 27к","1 ступень / 2 ступень"].map((s,i)=>(i>0?'<span class="f-arr" style="color:var(--biz)">→</span>':'')+`<span class="f-step" style="background:var(--biz-bg);border:1px solid #4ade8033">${s}</span>`).join('')}</div>
+`;
+
+// ══════ КОНТЕНТ ══════
+document.getElementById("p-content").innerHTML=`
+<h2 class="sec" style="color:var(--t2)">КОНТЕНТ</h2>
+
+<div class="content-block">
+  <h4 style="color:var(--both)">До воронки</h4>
+  <div class="c-item" style="color:var(--t2)">нерегулярный ввод в тему + прогрев</div>
+</div>
+
+<div class="content-block">
+  <h4 style="color:var(--mind)">После воронки</h4>
+  
+  <div style="margin-bottom:12px">
+    <div class="sec-xs" style="color:var(--t3);margin-top:8px">Инстаграм</div>
+    <div class="c-item">1 единица контента в обе школы</div>
+  </div>
+
+  <div style="margin-bottom:12px">
+    <div class="sec-xs" style="color:var(--t3)">Телеграм</div>
+    <div class="c-item">2-3 единицы контента в тг (?возможно будем разводить тг)</div>
+  </div>
+
+  <div style="margin-bottom:12px">
+    <div class="sec-xs" style="color:var(--t3)">Тредс</div>
+    <div class="c-item">Ежедневное ведение на воронки</div>
+  </div>
+
+  <div style="margin-bottom:12px">
+    <div class="sec-xs" style="color:var(--t3)">Vc.ru</div>
+    <div class="c-item">1 раз в неделю на воронку</div>
+  </div>
+</div>
+
+<div class="content-block">
+  <h4 style="color:var(--danger)">Ютуб + ВК · Один канал на обе школы</h4>
+  
+  <div style="background:var(--mind-bg);border:1px solid #a78bfa44;border-radius:6px;padding:16px;margin-bottom:16px">
+    <div style="font-family:var(--fh);font-size:16px;font-weight:800;color:var(--mind);margin-bottom:4px">«ВЕРШИНА ЦЕПИ»</div>
+    <div style="font-size:12px;color:var(--t2);margin-bottom:12px">Канал Сергея Жданова о бизнесе и мышлении через метафору пищевой цепочки</div>
+    
+    <div style="font-size:13px;font-weight:600;color:var(--t2);margin-bottom:8px">Концепция:</div>
+    <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:12px">
+      Бизнес сдохнет, если ты не зверь в бизнесе. И в жизни ты не пробьёшься, если твоя реальность — быть млекопитающим, а не хищником. Есть те, кто на вершине цепи — и есть все остальные. СЮ прошёл путь от нуля до 9 ресторанов — он знает, как думает и действует хищник. Канал — про то, как занять своё место на вершине: в бизнесе, в голове, в жизни.
+    </div>
+
+    <div style="font-size:13px;font-weight:600;color:var(--t2);margin-bottom:8px">Почему работает на обе школы:</div>
+    <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:12px">
+      Метафора хищника = универсальный рубрикатор. Бизнес-контент: как хищник управляет финансами, собирает стаю (команду), захватывает территорию (рынок). Мышление: почему ты застрял на уровне добычи, как переключить голову на режим хищника. Один канал — две воронки: бизнес-выпуски ведут на воронку бизнес-школы, мышление-выпуски — на воронку клуба.
+    </div>
+
+    <div style="font-size:13px;font-weight:600;color:var(--t2);margin-bottom:8px">Рубрики:</div>
+    <div class="c-item" style="color:var(--mind)">«Вершина цепи: голова» — мышление хищника, рефрейминг, почему большинство остаётся добычей → воронка школы мышления</div>
+    <div class="c-item" style="color:var(--biz)">«Вершина цепи: бизнес» — финансы, команда, управление, стратегия → воронка бизнес-школы</div>
+    <div class="c-item" style="color:var(--both)">«Вершина цепи: стая» — как собрать команду-стаю, которая охотится вместе → команда, HR, коучинг Ольги</div>
+    <div class="c-item" style="color:var(--t2)">«Вершина цепи: территория» — кейсы из ресторанного бизнеса СЮ, захват ниши, масштабирование</div>
+  </div>
+
+  <div style="font-size:13px;font-weight:600;color:var(--t2);margin-bottom:8px">Контент-план по выпускам:</div>
+  <div class="c-item">Ролик-манифест: раскрывающий силу СЮ (+создающий нужный образ хищника и делающий рефрейминг для аудитории) — «Почему ты добыча, а не хищник»</div>
+  <div class="c-item">Ютуб с Еленой-психологом — рефрейминг мышления, рубрика «Вершина цепи: голова» → воронка клуба мышления</div>
+  <div class="c-item">2-3 небольших ролика ведущие на 1 тему клуба — нарезки / shorts из больших выпусков</div>
+  <div class="c-item">Ютуб с финансовым аналитиком — рубрика «Вершина цепи: бизнес» → воронка по финансам МК → средний чек</div>
+  <div class="c-item">Ютуб с Ольгой — рубрика «Вершина цепи: стая» → команда, коучинг</div>
+  <div class="c-item">Ютуб с ресторанами — рубрика «Вершина цепи: территория» → кейсы, закулисье 9 ресторанов</div>
+</div>
+`;
+
+// ══════ ЗАДАЧИ ══════
+const urgent=[
+  {task:"Прописать воронку школы мышления",s:"Мышление"},
+  {task:"Прописать воронку бизнес-школы",s:"Бизнес"},
+  {task:"Подключить Продамус",s:"Обе"},
+  {task:"Анкета листа ожидания клуба",s:"Мышление"},
+  {task:"Тема 1-го месяца клуба + контент",s:"Мышление"},
+  {task:"Создать аккаунт бизнес-школы (РАНЬШЕ!)",s:"Бизнес"},
+  {task:"ЛМ + МК финансы",s:"Бизнес"},
+  {task:"Финансовая диагностика как элемент продаж",s:"Бизнес"},
+  {task:"Созвон с психологом (среда), перед — полное видение по продукту",s:"Мышление"},
+  {task:"Сайт с предзаписью через бот на все продукты",s:"Обе"},
+  {task:"Подготовка 15 рилс + 15 карусель в аккаунт бизнес-школы",s:"Бизнес"},
+  {task:"Подготовка 15 рилс + 15 каруселей для школы мышления",s:"Мышление"},
+  {task:"Продумать коучинг Ольги (рассрочка, после продамуса)",s:"Бизнес"},
+  {task:"Предложить СЮ выкуп прав на контент среднечековых продуктов",s:"Обе"},
+];
+const taskDone=urgent.map(()=>false);
+const regular=[
+  {task:"Рилс с воронкой на клуб",freq:"2 р/мес",who:"SMM + видеограф + СЮ",s:"Мышление"},
+  {task:"Контент на vc.ru",freq:"1 р/нед",who:"Копирайтер",s:"Мышление"},
+  {task:"Контент в Threads → воронка",freq:"Ежедневно",who:"SMM",s:"Мышление"},
+  {task:"Контент бизнес-школы (тема мес.)",freq:"3–5 постов/нед",who:"SMM",s:"Бизнес"},
+  {task:"Рилс/видео бизнес-школы",freq:"2 р/мес",who:"SMM + видеограф",s:"Бизнес"},
+  {task:"Работа клуба: тема + задания",freq:"Постоянно",who:"Психолог",s:"Мышление"},
+  {task:"Диагностика участников клуба",freq:"1 р/мес",who:"Психолог",s:"Мышление"},
+  {task:"Окно входа в клуб (3 дня)",freq:"1 р/мес",who:"Продюсер",s:"Мышление"},
+];
+
+function renderTasks(){
+  const el=document.getElementById("urgentList");el.innerHTML='';
+  urgent.forEach((t,i)=>{
+    const row=document.createElement("div");row.className="task-row";
+    row.innerHTML=`<div class="chk ${taskDone[i]?'done':''}">${taskDone[i]?'✓':''}</div><span class="task-txt ${taskDone[i]?'done':''}">${t.task}</span>${bg(t.s)}`;
+    row.onclick=()=>{taskDone[i]=!taskDone[i];renderTasks()};
+    el.appendChild(row);
+  });
+  document.getElementById("taskCnt").textContent=`Выполнено: ${taskDone.filter(Boolean).length}/${urgent.length}`;
+}
+
+let regHtml=`<table><thead class="th-n"><tr><th>Задача</th><th>Частота</th><th>Ответственный</th><th>Школа</th></tr></thead><tbody>`;
+regular.forEach((t,i)=>{regHtml+=`<tr class="${i%2===0?'tr-a':''}"><td style="color:var(--t2)">${t.task}</td><td style="color:var(--both);font-weight:600">${t.freq}</td><td style="color:var(--t3)">${t.who}</td><td>${bg(t.s)}</td></tr>`});
+regHtml+='</tbody></table>';
+
+document.getElementById("p-tasks").innerHTML=`
+<h2 class="sec" style="color:var(--danger)">⚡ СРОЧНЫЕ ЗАДАЧИ</h2>
+<div class="card" style="margin-bottom:32px"><div id="urgentList"></div><div class="task-counter" id="taskCnt" style="margin-top:12px;font-size:12px;color:var(--t4)"></div></div>
+<h2 class="sec" style="color:var(--t3)">🔄 РЕГУЛЯРНЫЕ ЗАДАЧИ</h2>
+<div class="scroll-x">${regHtml}</div>`;
+renderTasks();
+
+// ══════ МЕТРИКИ ══════
+const metrics=[
+  {m:"Заявки в лист ожидания",s:"Мышление",t:"150+"},
+  {m:"Оплат в клуб",s:"Мышление",t:"50 чел"},
+  {m:"Конверсия клуб → 47к",s:"Мышление",t:"10–20%"},
+  {m:"Конверсия клуб → VIP",s:"Мышление",t:"2–3%"},
+  {m:"Участники МК",s:"Бизнес",t:"25+ чел"},
+  {m:"Конверсия МК → 27к",s:"Бизнес",t:"10–15%"},
+  {m:"Общий доход",s:"Обе",t:"500 000₽+"},
+];
+let mHtml='<div class="metrics-g">';
+metrics.forEach(m=>{const c=sc(m.s);mHtml+=`<div class="m-card" style="border:1px solid ${c}33;border-left:3px solid ${c}"><div class="m-hdr"><span class="m-lbl">${m.m}</span>${bg(m.s)}</div><div class="m-val" style="color:${c}">${m.t}</div><div class="m-bar-bg"><div class="m-bar" style="background:${c}"></div></div><div style="font-size:10px;color:var(--t5);margin-top:4px">Текущее: —</div></div>`});
+mHtml+='</div>';
+mHtml+=`<div class="ladder-box"><h3 class="sec-sm" style="color:var(--t2)">ПРОДУКТОВЫЕ ЛЕСТНИЦЫ</h3><div class="ladder-grid">
+<div><div class="sec-xs" style="color:var(--mind)">Школа мышления</div>
+${[{n:"Клуб",p:"1 990₽"},{n:"Курс трансформации",p:"47 000₽"},{n:"VIP-программа",p:"170 000₽+"}].map((s,i)=>`<div class="ladder-step"><div class="ladder-num" style="width:${20+i*12}px;background:rgba(167,139,250,${0.3+i*.25})">${i+1}</div><span class="ladder-name">${s.n}</span><span class="ladder-pr" style="color:var(--mind)">${s.p}</span></div>`).join('')}
+</div>
+<div><div class="sec-xs" style="color:var(--biz)">Бизнес-школа</div>
+${[{n:"ЛМ (бесплатно)",p:"0₽"},{n:"МК узкая тема",p:"5 400₽"},{n:"Средний чек (узкая ниша)",p:"27 000₽"},{n:"1 ступень (МСП)",p:"150–200к₽"},{n:"2 ступень (крупный)",p:"300–500к₽"}].map((s,i)=>`<div class="ladder-step"><div class="ladder-num" style="width:${20+i*6}px;background:rgba(74,222,128,${0.15+i*.15})">${i+1}</div><span class="ladder-name">${s.n}</span><span class="ladder-pr" style="color:var(--biz)">${s.p}</span></div>`).join('')}
+</div></div></div>`;
+document.getElementById("p-metrics").innerHTML=mHtml;
+
+// ══════ ПРОБЛЕМЫ ══════
+document.getElementById("p-problems").innerHTML=`
+<div class="problem-box">
+  <div class="problem-title" style="color:var(--danger)">Низкая лояльность аудитории (60к подписчиков)</div>
+  <div class="problem-desc">Проблема: аудитория набрана через Рилс на разные темы, личность не раскрыта, экспертность не воспринимается.</div>
+  <div style="font-size:13px;font-weight:600;color:var(--t2);margin-bottom:10px">Решение — стратегия в 3 шага:</div>
+  <div class="step-row"><span class="step-num" style="background:var(--mind-bg);color:var(--mind)">1</span>Контент-сдвиг: переход с разрозненных тем на единую линию «мышление победителя» в стиле ролевой модели. Провокация, дерзость, личные истории СЮ.</div>
+  <div class="step-row"><span class="step-num" style="background:var(--mind-bg);color:var(--mind)">2</span>Раскрытие личности: сторис, Threads, vc.ru — показать путь СЮ от старта до 9 ресторанов. Не «я эксперт», а «я прошёл этот путь, и ты можешь».</div>
+  <div class="step-row"><span class="step-num" style="background:var(--mind-bg);color:var(--mind)">3</span>Социальное доказательство: первые участники клуба = первые кейсы. Их результаты → контент → рост доверия.</div>
+  <div class="hint" style="margin-top:12px">Важно: не пытаемся «разогреть» всю аудиторию 60к. Цель — вычленить из неё горячее ядро (50–200 человек), которое готово платить. Остальные подтянутся по мере роста контента и кейсов.</div>
+</div>
+
+<div class="problem-box">
+  <div class="problem-title" style="color:var(--both)">Все продукты нужно делать с нуля</div>
+  <div class="problem-desc">Решение: продуктовая приоритизация. Не делаем всё сразу.</div>
+  <div class="step-row"><span class="step-num" style="background:var(--biz-bg);color:var(--biz)">1</span>Клуб мышления (1990р) — минимальный продукт, быстро собирается</div>
+  <div class="step-row"><span class="step-num" style="background:var(--biz-bg);color:var(--biz)">2</span>МК по узкой теме бизнес</div>
+  <div class="hint" style="margin-top:12px">Остальные продукты готовятся параллельно, но запускаются на неделе 7–8 и позже. К этому моменту уже будет аудитория из клуба и МК, которой можно продавать.</div>
+</div>
+`;
+</script>
+</body>
+</html>
